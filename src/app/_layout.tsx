@@ -1,7 +1,13 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { configureAuth } from '@/api/http-client';
+import { sessionAuthAdapter } from '@/features/auth/session-store';
 import { useTheme, type Theme } from '@/ui';
+
+// Module scope: runs once when the app bundle loads, before any screen.
+// The http-client reads and renews the session through the session store.
+configureAuth(sessionAuthAdapter);
 
 // Navigator theme (headers, screen background during transitions) built from
 // our tokens, so native chrome and our screens use the same colors.
