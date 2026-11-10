@@ -1,34 +1,33 @@
 {
   "expo": {
-    "name": "Agronomo-rn",
-    "slug": "Agronomo-rn",
+    "name": "Agrônomo RN",
+    "slug": "agronomo-rn",
     "version": "1.0.0",
+    "platforms": ["ios", "android"],
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "agronomorn",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "br.com.agronomo.rn"
     },
     "android": {
+      "package": "br.com.agronomo.rn",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2E5E4E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
-    "web": {
-      "output": "server",
-      "favicon": "./assets/images/favicon.png"
-    },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#2E5E4E",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
