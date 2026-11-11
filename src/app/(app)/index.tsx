@@ -1,36 +1,104 @@
 import { useMutation } from '@tanstack/react-query';
-import { StyleSheet, View } from 'react-native';
+import { router, Stack } from 'expo-router';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { signOut, useSessionUser } from '@/features/auth/session-store';
-import { AppText, Button, Screen } from '@/ui';
+import { FarmCard } from '@/features/farms/farm-card';
+import { useMyFarms } from '@/features/farms/use-my-farms';
+import { AppText, Button, QueryState, Screen, useTheme, type Theme } from '@/ui';
 
-// Placeholder home: the farm list comes in step 6.
+/** Home: the user's places (Flutter: HomePage + HomeBloc). */
 export default function Home() {
+  const theme = useTheme();
+  const styles = createStyles(theme);
   const user = useSessionUser();
-  // useMutation also fits local async actions: it gives isPending for the button.
+  const farms = useMyFarms();
   const logout = useMutation({ mutationFn: signOut });
 
   return (
-    <Screen edges={['bottom']}>
-      <View style={styles.content}>
-        <AppText variant="subtitle">Olá, {user?.displayName || 'produtor'}</AppText>
-        <AppText tone="muted">{user?.email}</AppText>
-        <AppText tone="muted">A lista de fazendas entra no passo 6.</AppText>
-        <Button
-          title="Sair"
-          variant="outlined"
-          loading={logout.isPending}
-          onPress={() => logout.mutate()}
-        />
-      </View>
+    <Screen edges={['bottom']} style={styles.screen}>
+      {/* Screen options set from inside the screen (Flutter: the page's own AppBar). */}
+      <Stack.Screen
+        options={{
+          title: 'Meus lugares',
+          headerRight: () => (
+            <Button
+              title="Sair"
+              variant="text"
+              loading={logout.isPending}
+              onPress={() => logout.mutate()}
+            />
+          ),
+        }}
+      />
+      <QueryState query={farms}>
+        {(items) => (
+          // FlatList renders only what is near the screen (Flutter: ListView.builder).
+          <FlatList
+            data={items}
+            keyExtractor={(member) => String(member.id)}
+            renderItem={({ item }) => (
+              <FarmCard
+                member={item}
+                onPress={() =>
+                  router.push({ pathname: '/farm/[farmId]', params: { farmId: item.farm.id } })
+                }
+              />
+            )}
+            ListHeaderComponent={
+              <AppText variant="subtitle" style={styles.greeting}>
+                Olá, {user?.displayName || 'produtor'}
+              </AppText>
+            }
+            ListEmptyComponent={
+              <View style={styles.empty}>
+                <AppText variant="subtitle">Nenhum lugar ainda</AppText>
+                <AppText tone="muted" style={styles.centerText}>
+                  Cadastre sua fazenda ou sua casa no app Meu Agrônomo Digital para vê-la aqui.
+                </AppText>
+              </View>
+            }
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            contentContainerStyle={styles.list}
+            refreshControl={
+              <RefreshControl
+                // isRefetching: only the pull, not the first load (that one is QueryState's).
+                refreshing={farms.isRefetching}
+                onRefresh={() => void farms.refetch()}
+                colors={[theme.colors.primary]}
+                tintColor={theme.colors.primary}
+              />
+            }
+          />
+        )}
+      </QueryState>
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 16,
-  },
-});
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    screen: {
+      paddingHorizontal: 0,
+    },
+    list: {
+      flexGrow: 1,
+      padding: theme.spacing.md,
+    },
+    greeting: {
+      marginBottom: theme.spacing.md,
+    },
+    separator: {
+      height: theme.spacing.md,
+    },
+    empty: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: theme.spacing.sm,
+      paddingVertical: theme.spacing.xl,
+    },
+    centerText: {
+      textAlign: 'center',
+    },
+  });
