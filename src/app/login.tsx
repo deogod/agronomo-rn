@@ -10,7 +10,7 @@ import {
 
 import { useAuthenticationLogin } from '@/api/generated/endpoints/authentication/authentication';
 import { signIn } from '@/features/auth/session-store';
-import { AppText, Button, Screen, TextField, useTheme, type Theme } from '@/ui';
+import { AppText, Button, ErrorBanner, Screen, TextField, useTheme, type Theme } from '@/ui';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -114,11 +114,7 @@ export default function Login() {
             editable={!busy}
           />
 
-          {login.error ? (
-            <View style={styles.errorBox} accessibilityRole="alert">
-              <AppText style={styles.errorText}>{login.error.message}</AppText>
-            </View>
-          ) : null}
+          {login.error ? <ErrorBanner message={login.error.message} /> : null}
 
           <Button title="Entrar" onPress={submit} loading={busy} />
         </ScrollView>
@@ -141,13 +137,5 @@ const createStyles = (theme: Theme) =>
     header: {
       gap: theme.spacing.xs,
       marginBottom: theme.spacing.lg,
-    },
-    errorBox: {
-      backgroundColor: theme.colors.errorContainer,
-      borderRadius: theme.radius.sm,
-      padding: theme.spacing.md,
-    },
-    errorText: {
-      color: theme.colors.onErrorContainer,
     },
   });

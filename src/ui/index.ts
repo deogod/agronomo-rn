@@ -1,6 +1,8 @@
 export { AppText } from './app-text';
 export { Button } from './button';
 export { Chip } from './chip';
+export { ChoiceChips } from './choice-chips';
+export { ErrorBanner } from './error-banner';
 export { QueryState } from './query-state';
 export { Screen } from './screen';
 export { TextField } from './text-field';

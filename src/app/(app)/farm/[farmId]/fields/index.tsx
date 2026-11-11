@@ -1,9 +1,9 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { FieldItem } from '@/features/fields/field-item';
 import { useFarmFields } from '@/features/fields/use-farm-fields';
-import { AppText, QueryState, Screen, useTheme, type Theme } from '@/ui';
+import { AppText, Button, QueryState, Screen, useTheme, type Theme } from '@/ui';
 
 /** Fields of a farm, loaded page by page while scrolling (Flutter: FieldsPage). */
 export default function FieldsScreen() {
@@ -19,7 +19,20 @@ export default function FieldsScreen() {
 
   return (
     <Screen edges={['bottom']} style={styles.screen}>
-      <Stack.Screen options={{ title: 'Talhões' }} />
+      <Stack.Screen
+        options={{
+          title: 'Talhões',
+          headerRight: () => (
+            <Button
+              title="Novo"
+              variant="text"
+              onPress={() =>
+                router.push({ pathname: '/farm/[farmId]/fields/form', params: { farmId } })
+              }
+            />
+          ),
+        }}
+      />
       <QueryState query={fields}>
         {(items) => (
           <FlatList
@@ -39,7 +52,7 @@ export default function FieldsScreen() {
             ListEmptyComponent={
               <View style={styles.empty}>
                 <AppText variant="subtitle">Nenhum talhão cadastrado</AppText>
-                <AppText tone="muted">O cadastro de talhões entra no passo 8.</AppText>
+                <AppText tone="muted">Toque em “Novo” para cadastrar o primeiro.</AppText>
               </View>
             }
             refreshControl={
