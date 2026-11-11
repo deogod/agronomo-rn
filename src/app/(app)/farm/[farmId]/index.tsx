@@ -1,5 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { areaLabel, farmTypeLabel, locationLabel } from '@/features/farms/labels';
 import { useMyFarm } from '@/features/farms/use-my-farms';
@@ -16,13 +16,18 @@ export default function FarmScreen() {
   const { farmId } = useLocalSearchParams<{ farmId: string }>();
   const farm = useMyFarm(Number(farmId));
 
+  // ScrollView with contentInsetAdjustmentBehavior: on iOS 26+ the header floats
+  // over the screen, and only a scroll view can push its content below it.
   return (
     <Screen edges={['bottom']}>
       <Stack.Screen options={{ title: farm.data?.farm.name ?? '' }} />
       <QueryState query={farm}>
         {(member) =>
           member ? (
-            <View style={styles.content}>
+            <ScrollView
+              contentInsetAdjustmentBehavior="automatic"
+              contentContainerStyle={styles.content}
+            >
               <AppText variant="title">{member.farm.name}</AppText>
               <AppText tone="muted">
                 {[
@@ -48,14 +53,17 @@ export default function FarmScreen() {
                 // Same rule as the API: a home has no fields or hectares.
                 <AppText tone="muted">Casas não têm talhões.</AppText>
               )}
-            </View>
+            </ScrollView>
           ) : (
-            <View style={styles.content}>
+            <ScrollView
+              contentInsetAdjustmentBehavior="automatic"
+              contentContainerStyle={styles.content}
+            >
               <AppText variant="subtitle">Lugar não encontrado</AppText>
               <AppText tone="muted">
                 Você não faz mais parte deste lugar ou ele foi removido.
               </AppText>
-            </View>
+            </ScrollView>
           )
         }
       </QueryState>

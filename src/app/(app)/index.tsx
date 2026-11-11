@@ -5,7 +5,7 @@ import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { signOut, useSessionUser } from '@/features/auth/session-store';
 import { FarmCard } from '@/features/farms/farm-card';
 import { useMyFarms } from '@/features/farms/use-my-farms';
-import { AppText, Button, QueryState, Screen, useTheme, type Theme } from '@/ui';
+import { AppText, Button, QueryState, Screen, usePullToRefresh, useTheme, type Theme } from '@/ui';
 
 /** Home: the user's places (Flutter: HomePage + HomeBloc). */
 export default function Home() {
@@ -13,6 +13,7 @@ export default function Home() {
   const styles = createStyles(theme);
   const user = useSessionUser();
   const farms = useMyFarms();
+  const pull = usePullToRefresh(farms.refetch);
   const logout = useMutation({ mutationFn: signOut });
 
   return (
@@ -35,6 +36,9 @@ export default function Home() {
         {(items) => (
           // FlatList renders only what is near the screen (Flutter: ListView.builder).
           <FlatList
+            // iOS 26+: the header is translucent and floats over the screen; this makes
+            // the list start below it (RN default is "never"). No effect on Android.
+            contentInsetAdjustmentBehavior="automatic"
             data={items}
             keyExtractor={(member) => String(member.id)}
             renderItem={({ item }) => (
@@ -62,9 +66,9 @@ export default function Home() {
             contentContainerStyle={styles.list}
             refreshControl={
               <RefreshControl
-                // isRefetching: only the pull, not the first load (that one is QueryState's).
-                refreshing={farms.isRefetching}
-                onRefresh={() => void farms.refetch()}
+                // Spins only for the user's pull (see usePullToRefresh).
+                refreshing={pull.refreshing}
+                onRefresh={pull.onRefresh}
                 colors={[theme.colors.primary]}
                 tintColor={theme.colors.primary}
               />

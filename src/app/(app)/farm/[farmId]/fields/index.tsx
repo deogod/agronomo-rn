@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'r
 
 import { FieldItem } from '@/features/fields/field-item';
 import { useFarmFields } from '@/features/fields/use-farm-fields';
-import { AppText, Button, QueryState, Screen, useTheme, type Theme } from '@/ui';
+import { AppText, Button, QueryState, Screen, usePullToRefresh, useTheme, type Theme } from '@/ui';
 
 /** Fields of a farm, loaded page by page while scrolling (Flutter: FieldsPage). */
 export default function FieldsScreen() {
@@ -11,6 +11,7 @@ export default function FieldsScreen() {
   const styles = createStyles(theme);
   const { farmId } = useLocalSearchParams<{ farmId: string }>();
   const fields = useFarmFields(Number(farmId));
+  const pull = usePullToRefresh(fields.refetch);
 
   function loadMore() {
     // onEndReached can fire several times near the end: guard it.
@@ -36,6 +37,9 @@ export default function FieldsScreen() {
       <QueryState query={fields}>
         {(items) => (
           <FlatList
+            // iOS 26+: the header is translucent and floats over the screen; this makes
+            // the list start below it (RN default is "never"). No effect on Android.
+            contentInsetAdjustmentBehavior="automatic"
             data={items}
             keyExtractor={(field) => String(field.id)}
             renderItem={({ item }) => <FieldItem field={item} />}
@@ -57,8 +61,8 @@ export default function FieldsScreen() {
             }
             refreshControl={
               <RefreshControl
-                refreshing={fields.isRefetching && !fields.isFetchingNextPage}
-                onRefresh={() => void fields.refetch()}
+                refreshing={pull.refreshing}
+                onRefresh={pull.onRefresh}
                 colors={[theme.colors.primary]}
                 tintColor={theme.colors.primary}
               />
