@@ -1,4 +1,3 @@
-import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
@@ -6,8 +5,16 @@ import { AppText } from './app-text';
 import { Button } from './button';
 import { useTheme } from './use-theme';
 
+/** What QueryState reads: fits useQuery and useInfiniteQuery results. */
+type QueryLike<T> = {
+  data: T | undefined;
+  isError: boolean;
+  error: Error | null;
+  refetch: () => Promise<unknown>;
+};
+
 type QueryStateProps<T> = {
-  query: UseQueryResult<T, Error>;
+  query: QueryLike<T>;
   children: (data: T) => ReactNode;
 };
 
@@ -29,7 +36,7 @@ export function QueryState<T>({ query, children }: QueryStateProps<T>) {
       <View style={[styles.center, { gap: theme.spacing.md }]}>
         <AppText variant="subtitle">Não foi possível carregar</AppText>
         <AppText tone="muted" style={styles.text}>
-          {query.error.message}
+          {query.error?.message}
         </AppText>
         <Button title="Tentar de novo" variant="outlined" onPress={() => void query.refetch()} />
       </View>

@@ -1,12 +1,12 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { areaLabel, farmTypeLabel, locationLabel } from '@/features/farms/labels';
 import { useMyFarm } from '@/features/farms/use-my-farms';
-import { AppText, QueryState, Screen, useTheme, type Theme } from '@/ui';
+import { AppText, Button, QueryState, Screen, useTheme, type Theme } from '@/ui';
 
 /**
- * Placeholder farm panel: the fields list comes in step 7.
+ * Farm panel (Flutter: FarmPage, reduced to the fields entry for this port).
  * The route carries only the id; the farm is read from the cached list.
  */
 export default function FarmScreen() {
@@ -33,7 +33,21 @@ export default function FarmScreen() {
                   .filter(Boolean)
                   .join(' · ')}
               </AppText>
-              <AppText tone="muted">Os talhões entram no passo 7.</AppText>
+              {member.farm.type === 'FARM' ? (
+                <Button
+                  title="Talhões"
+                  variant="outlined"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/farm/[farmId]/fields',
+                      params: { farmId: member.farm.id },
+                    })
+                  }
+                />
+              ) : (
+                // Same rule as the API: a home has no fields or hectares.
+                <AppText tone="muted">Casas não têm talhões.</AppText>
+              )}
             </View>
           ) : (
             <View style={styles.content}>
@@ -52,7 +66,7 @@ export default function FarmScreen() {
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     content: {
-      gap: theme.spacing.sm,
+      gap: theme.spacing.md,
       paddingVertical: theme.spacing.lg,
     },
   });
