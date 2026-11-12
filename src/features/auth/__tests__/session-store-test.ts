@@ -18,6 +18,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: async (key: string, value: string) => void mockAsync.set(key, value),
 }));
 
+jest.mock('../google-sign-in', () => ({ signOutOfProviders: jest.fn(async () => undefined) }));
 jest.mock('@/api/generated/endpoints/authentication/authentication', () => ({
   authenticationLogout: (...args: unknown[]) => mockLogout(...args),
 }));

@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 // Dynamic app config (replaces app.json). Expo reads it at build and start
@@ -22,52 +22,91 @@ function secretFile(envVar: string, fallback: string): string {
   return path;
 }
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
-  ...config,
-  name: 'Agrônomo RN',
-  slug: 'agronomo-rn',
-  version: '1.0.0',
-  platforms: ['ios', 'android'],
-  orientation: 'portrait',
-  icon: './assets/images/icon.png',
-  scheme: 'agronomorn',
-  userInterfaceStyle: 'automatic',
-  ios: {
-    icon: './assets/expo.icon',
-    bundleIdentifier: 'br.com.agronomo.rn',
-    googleServicesFile: secretFile('GOOGLE_SERVICES_PLIST', './secrets/GoogleService-Info.plist'),
-  },
-  android: {
-    package: 'br.com.agronomo.rn',
-    googleServicesFile: secretFile('GOOGLE_SERVICES_JSON', './secrets/google-services.json'),
-    adaptiveIcon: {
-      backgroundColor: '#2E5E4E',
-      foregroundImage: './assets/images/android-icon-foreground.png',
-      backgroundImage: './assets/images/android-icon-background.png',
-      monochromeImage: './assets/images/android-icon-monochrome.png',
+/**
+ * The OAuth "web" client (client_type 3) from google-services.json. Google
+ * Sign-In needs it to issue the idToken that Firebase Auth accepts.
+ */
+function googleWebClientId(googleServicesJson: string): string {
+  type OAuthClient = { client_id: string; client_type: number };
+  const parsed = JSON.parse(readFileSync(googleServicesJson, 'utf8')) as {
+    client: { oauth_client?: OAuthClient[] }[];
+  };
+  const web = parsed.client
+    .flatMap((client) => client.oauth_client ?? [])
+    .find((oauth) => oauth.client_type === 3);
+  if (!web) {
+    throw new Error(
+      `${googleServicesJson} has no web OAuth client. Enable Google sign-in in the Firebase console and download it again.`,
+    );
+  }
+  return web.client_id;
+}
+
+export default ({ config }: ConfigContext): ExpoConfig => {
+  const googleServicesJson = secretFile('GOOGLE_SERVICES_JSON', './secrets/google-services.json');
+  return {
+    ...config,
+    name: 'Agrônomo RN',
+    slug: 'agronomo-rn',
+    version: '1.0.0',
+    platforms: ['ios', 'android'],
+    orientation: 'portrait',
+    icon: './assets/images/icon.png',
+    scheme: 'agronomorn',
+    userInterfaceStyle: 'automatic',
+    ios: {
+      icon: './assets/expo.icon',
+      bundleIdentifier: 'br.com.agronomo.rn',
+      googleServicesFile: secretFile('GOOGLE_SERVICES_PLIST', './secrets/GoogleService-Info.plist'),
     },
-    predictiveBackGestureEnabled: false,
-  },
-  plugins: [
-    'expo-router',
-    [
-      'expo-splash-screen',
-      {
+    android: {
+      package: 'br.com.agronomo.rn',
+      googleServicesFile: googleServicesJson,
+      adaptiveIcon: {
         backgroundColor: '#2E5E4E',
-        image: './assets/images/splash-icon.png',
-        imageWidth: 76,
+        foregroundImage: './assets/images/android-icon-foreground.png',
+        backgroundImage: './assets/images/android-icon-background.png',
+        monochromeImage: './assets/images/android-icon-monochrome.png',
       },
+      predictiveBackGestureEnabled: false,
+    },
+    plugins: [
+      'expo-router',
+      [
+        'expo-splash-screen',
+        {
+          backgroundColor: '#2E5E4E',
+          image: './assets/images/splash-icon.png',
+          imageWidth: 76,
+        },
+      ],
+      'expo-secure-store',
+      // React Native Firebase: one entry per module that has native setup.
+      '@react-native-firebase/app',
+      '@react-native-firebase/crashlytics',
+      '@react-native-firebase/auth',
+      // Same dependency manager as Firebase (SPM); keeps the Firebase-based setup.
+      ['@react-native-google-signin/google-signin', { iosDependencyManager: 'spm' }],
+      [
+        'expo-build-properties',
+        {
+          // Firebase iOS SDK 13 is installed through Swift Package Manager, which
+          // needs dynamic frameworks (static linking breaks the build).
+          ios: { useFrameworks: 'dynamic' },
+          // Firebase Android libraries (e.g. firebase-auth 25) are compiled with
+          // Kotlin 2.4; the RN default (2.2) cannot read their metadata.
+          android: { kotlinVersion: '2.4.0' },
+        },
+      ],
     ],
-    'expo-secure-store',
-    // React Native Firebase: one entry per module that has native setup.
-    '@react-native-firebase/app',
-    '@react-native-firebase/crashlytics',
-    // Firebase iOS SDK 13 is installed through Swift Package Manager, which
-    // needs dynamic frameworks (static linking breaks the build).
-    ['expo-build-properties', { ios: { useFrameworks: 'dynamic' } }],
-  ],
-  experiments: {
-    typedRoutes: true,
-    reactCompiler: true,
-  },
-});
+    experiments: {
+      typedRoutes: true,
+      reactCompiler: true,
+    },
+    // Read in the app through expo-constants (see src/config/env.ts).
+    extra: {
+      ...config.extra,
+      googleWebClientId: googleWebClientId(googleServicesJson),
+    },
+  };
+};

@@ -14,6 +14,7 @@ import { create } from 'zustand';
 import { authenticationLogout } from '@/api/generated/endpoints/authentication/authentication';
 import type { AuthAdapter, SessionTokens } from '@/api/http-client';
 
+import { signOutOfProviders } from './google-sign-in';
 import { sessionFromTokens, type Session } from './jwt';
 
 export type SessionStatus = 'loading' | 'signedIn' | 'signedOut';
@@ -126,6 +127,8 @@ export async function signOut(): Promise<void> {
   if (refreshToken) {
     await authenticationLogout({ refreshToken }).catch(() => undefined);
   }
+  // Also leave Google/Firebase, so the next Google login shows the account picker.
+  await signOutOfProviders();
   await clearSession();
 }
 
