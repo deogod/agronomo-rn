@@ -47,3 +47,7 @@ src/api/generated/
 
 # local test credentials (see CLAUDE.md, "API local")
 test-user.local.json
+
+# Local secrets and per-developer config (see secrets/README.md)
+secrets/*
+!secrets/README.md
