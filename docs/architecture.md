@@ -69,6 +69,10 @@ Photos come from `expo-image-picker`, are resized to 1920 px and converted to JP
 
 Photos require the `Authorization` header. `expo-image` receives the header, a `cacheKey` per photo and `cachePolicy="memory"`, so private photos are not stored on disk.
 
+### Full-screen photo viewer
+
+The `photo/[mediaId]` route is presented as a `fullScreenModal` through the `screenOptions` of the `(app)` layout, because the presentation must be known before the screen is pushed. Pinch, pan and double tap use React Native Gesture Handler 3 and Reanimated. Position lives in shared values and the geometry runs as worklets on the UI thread (`features/occurrences/photo-zoom.ts`), so gestures do not re-render React on each frame.
+
 ### Secrets
 
 Firebase config files stay in the git-ignored `secrets/` folder locally and in secret EAS file variables for cloud builds. `EXPO_PUBLIC_*` values are bundled into the app, so they are never secret.

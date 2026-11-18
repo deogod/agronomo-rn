@@ -19,7 +19,7 @@ onFlowComplete:
     direction: UP
 - tapOn: 'Ex.: Lagarta na soja'
 - inputText: 'E2E Ocorrencia'
-- tapOn: 'Título'
+- runFlow: subflows/close-keyboard.yaml
 
 # Impossible date
 - scrollUntilVisible:
@@ -27,7 +27,7 @@ onFlowComplete:
 - tapOn: '\d{2}/\d{2}/\d{4}'
 - eraseText: 10
 - inputText: '31022026'
-- tapOn: 'Data'
+- runFlow: subflows/close-keyboard.yaml
 - scrollUntilVisible:
     element: 'Cadastrar'
 - tapOn: 'Cadastrar'
@@ -38,10 +38,14 @@ onFlowComplete:
 - tapOn: '31/02/2026'
 - eraseText: 10
 - inputText: '15012026'
-- tapOn: 'Data'
+- runFlow: subflows/close-keyboard.yaml
 - scrollUntilVisible:
     element: 'Cadastrar'
 - tapOn: 'Cadastrar'
+# Back on the list: the form also shows the title while it is saving.
+- extendedWaitUntil:
+    visible: 'Nova'
+    timeout: 15000
 - extendedWaitUntil:
     visible: ${OCCURRENCE_ROW}
     timeout: 15000

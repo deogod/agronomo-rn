@@ -1,0 +1,31 @@
+# Needs the occurrence "Lagarta na soja" with at least one photo. Pinch is not
+# covered: Maestro has no multi-touch command.
+appId: br.com.agronomo.rn
+---
+- runFlow: subflows/sign-in.yaml
+- tapOn: '.*Fazenda Santa Clara'
+- tapOn: 'Ocorrências'
+- tapOn: '.*Lagarta na soja'
+- extendedWaitUntil:
+    visible: 'Ampliar foto'
+    timeout: 15000
+- tapOn:
+    text: 'Ampliar foto'
+    index: 0
+- extendedWaitUntil:
+    visible: 'Fechar'
+    timeout: 15000
+- assertVisible: 'Foto da ocorrência'
+
+# Double tap in and out, then drag: the viewer must stay open
+- doubleTapOn: 'Foto da ocorrência'
+- swipe:
+    start: 70%, 50%
+    end: 30%, 50%
+- doubleTapOn: 'Foto da ocorrência'
+- assertVisible: 'Fechar'
+
+- tapOn: 'Fechar'
+- extendedWaitUntil:
+    visible: 'Adicionar foto'
+    timeout: 15000

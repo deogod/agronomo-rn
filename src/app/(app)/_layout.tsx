@@ -13,7 +13,14 @@ export default function AppLayout() {
 
   return (
     <>
-      <Stack />
+      {/* The presentation must be known before the screen is pushed. */}
+      <Stack
+        screenOptions={({ route }) =>
+          route.name === 'photo/[mediaId]'
+            ? { presentation: 'fullScreenModal', animation: 'fade', headerShown: false }
+            : {}
+        }
+      />
       {/* Drawn after the Stack, so it stays on top of every screen. */}
       <InAppNotice />
     </>

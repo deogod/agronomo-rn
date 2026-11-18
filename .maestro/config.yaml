@@ -6,3 +6,4 @@ executionOrder:
     - login
     - fields
     - occurrences
+    - photo-viewer

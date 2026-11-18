@@ -1,0 +1,14 @@
+# Closes the keyboard so it does not cover the area that scrollUntilVisible
+# swipes and the button below the field.
+appId: br.com.agronomo.rn
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - pressKey: Enter

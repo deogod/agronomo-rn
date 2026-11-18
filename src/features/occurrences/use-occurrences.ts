@@ -5,6 +5,7 @@ import {
   mediaAttachToOccurrence,
   mediaUpload,
   useMediaFindAllByOccurrence,
+  useMediaFindById,
 } from '@/api/generated/endpoints/media/media';
 import {
   getOccurrenceFindAllByFarmIdInfiniteQueryKey,
@@ -41,6 +42,10 @@ export function useOccurrencePhotos(occurrenceId: number) {
   return useMediaFindAllByOccurrence(occurrenceId, {
     query: { select: (response) => response.data },
   });
+}
+
+export function useOccurrenceMedia(mediaId: number) {
+  return useMediaFindById(mediaId, { query: { select: (response) => response.data } });
 }
 
 export function useCreateOccurrence(farmId: number) {

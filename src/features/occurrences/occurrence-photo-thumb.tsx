@@ -1,23 +1,21 @@
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { MediaDto } from '@/api/generated/model';
-import { env } from '@/config/env';
-import { useAccessToken } from '@/features/auth/session-store';
 import { AppText, useTheme, type Theme } from '@/ui';
 
+import { usePhotoSource } from './use-photo-source';
+
 /**
- * Photo thumbnail. The API serves photos only with the Bearer header, so the
- * URL alone is not enough (Flutter: Image.network with headers).
- *
- * - cacheKey: the token changes every few minutes; the photo does not.
- * - cachePolicy "memory": private farm photos are not left on disk after logout.
+ * Photo thumbnail; a tap opens it in full screen. cachePolicy "memory": private
+ * farm photos are not left on disk after logout.
  */
 export function OccurrencePhotoThumb({ media }: { media: MediaDto }) {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const token = useAccessToken();
+  const source = usePhotoSource(media);
   const [failed, setFailed] = useState(false);
 
   if (failed) {
@@ -31,19 +29,23 @@ export function OccurrencePhotoThumb({ media }: { media: MediaDto }) {
   }
 
   return (
-    <Image
-      source={{
-        uri: env.apiUrl + media.contentUrl,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        cacheKey: `media-${media.id}`,
-      }}
-      cachePolicy="memory"
-      contentFit="cover"
-      transition={150}
-      accessibilityLabel="Foto da ocorrência"
-      onError={() => setFailed(true)}
-      style={styles.thumb}
-    />
+    <Pressable
+      onPress={() =>
+        router.push({ pathname: '/photo/[mediaId]', params: { mediaId: String(media.id) } })
+      }
+      accessibilityRole="button"
+      accessibilityLabel="Ampliar foto"
+      style={({ pressed }) => pressed && styles.pressed}
+    >
+      <Image
+        source={source}
+        cachePolicy="memory"
+        contentFit="cover"
+        transition={150}
+        onError={() => setFailed(true)}
+        style={styles.thumb}
+      />
+    </Pressable>
   );
 }
 
@@ -59,5 +61,8 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       padding: theme.spacing.xs,
+    },
+    pressed: {
+      opacity: 0.7,
     },
   });

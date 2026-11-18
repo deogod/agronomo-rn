@@ -9,7 +9,7 @@ Study port of the Meu Agrônomo Digital Flutter app to React Native. Built to le
 - E-mail/password and Google sign-in, with protected routes
 - Farms, and paginated fields with create, edit and delete
 - Push notifications (FCM) and a notifications screen
-- Occurrences with photos from the camera or gallery
+- Occurrences with photos from the camera or gallery, and a full-screen viewer with pinch to zoom
 
 ## Stack
 
