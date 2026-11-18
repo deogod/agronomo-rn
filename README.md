@@ -39,6 +39,15 @@ Rebuild after adding a native library or changing `app.config.ts`. To start only
 npx expo start --dev-client
 ```
 
+## Release builds
+
+Cloud builds use [EAS Build](https://docs.expo.dev/build/introduction/) and need your own Expo project and the Firebase files stored as EAS file variables (`GOOGLE_SERVICES_JSON`, `GOOGLE_SERVICES_PLIST`). The `preview` profile produces an Android APK and an iOS simulator app:
+
+```bash
+npx eas-cli@latest build --platform android --profile preview
+npx eas-cli@latest build --platform ios --profile preview
+```
+
 ## Quality
 
 ```bash
