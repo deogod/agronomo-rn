@@ -34,6 +34,9 @@ export function Button({
         onPress={onPress}
         disabled={inactive}
         accessibilityRole="button"
+        // Explicit because the spinner replaces the text while loading, and
+        // without a label Android keeps announcing "busy" after loading ends.
+        accessibilityLabel={title}
         accessibilityState={{ disabled: inactive, busy: loading }}
         android_ripple={{ color: theme.colors.primaryContainer }}
         style={({ pressed }) => [
