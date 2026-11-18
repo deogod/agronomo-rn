@@ -58,10 +58,16 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       icon: './assets/expo.icon',
       bundleIdentifier: 'br.com.agronomo.rn',
       googleServicesFile: secretFile('GOOGLE_SERVICES_PLIST', './secrets/GoogleService-Info.plist'),
+      // Push: APNs entitlement (FCM delivers to iOS through APNs) and the
+      // background mode for data messages. Real pushes need a physical device.
+      entitlements: { 'aps-environment': 'development' },
+      infoPlist: { UIBackgroundModes: ['remote-notification'] },
     },
     android: {
       package: 'br.com.agronomo.rn',
       googleServicesFile: googleServicesJson,
+      // Android 13+ asks for this at runtime (see features/notifications/permission.ts).
+      permissions: ['android.permission.POST_NOTIFICATIONS'],
       adaptiveIcon: {
         backgroundColor: '#2E5E4E',
         foregroundImage: './assets/images/android-icon-foreground.png',
@@ -85,6 +91,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       '@react-native-firebase/app',
       '@react-native-firebase/crashlytics',
       '@react-native-firebase/auth',
+      '@react-native-firebase/messaging',
       // Same dependency manager as Firebase (SPM); keeps the Firebase-based setup.
       ['@react-native-google-signin/google-signin', { iosDependencyManager: 'spm' }],
       [

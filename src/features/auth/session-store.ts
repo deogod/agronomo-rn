@@ -13,6 +13,7 @@ import { create } from 'zustand';
 
 import { authenticationLogout } from '@/api/generated/endpoints/authentication/authentication';
 import type { AuthAdapter, SessionTokens } from '@/api/http-client';
+import { getPushTokenWithin } from '@/features/notifications/push';
 
 import { signOutOfProviders } from './google-sign-in';
 import { sessionFromTokens, type Session } from './jwt';
@@ -125,7 +126,10 @@ async function clearSession(): Promise<void> {
 export async function signOut(): Promise<void> {
   const refreshToken = useSessionStore.getState().session?.refreshToken;
   if (refreshToken) {
-    await authenticationLogout({ refreshToken }).catch(() => undefined);
+    // The API also unlinks this device's push token, so pushes for this
+    // account stop here (Flutter waited up to 3 s for the token too).
+    const fcmToken = await getPushTokenWithin(3000);
+    await authenticationLogout({ refreshToken, fcmToken }).catch(() => undefined);
   }
   // Also leave Google/Firebase, so the next Google login shows the account picker.
   await signOutOfProviders();

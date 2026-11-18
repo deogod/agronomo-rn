@@ -19,6 +19,9 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 jest.mock('../google-sign-in', () => ({ signOutOfProviders: jest.fn(async () => undefined) }));
+jest.mock('@/features/notifications/push', () => ({
+  getPushTokenWithin: jest.fn(async () => 'fcm-token'),
+}));
 jest.mock('@/api/generated/endpoints/authentication/authentication', () => ({
   authenticationLogout: (...args: unknown[]) => mockLogout(...args),
 }));
@@ -103,7 +106,10 @@ describe('session store', () => {
     mockLogout.mockRejectedValueOnce(new Error('offline'));
     await store.signOut();
 
-    expect(mockLogout).toHaveBeenCalledWith({ refreshToken: tokens.refreshToken });
+    expect(mockLogout).toHaveBeenCalledWith({
+      refreshToken: tokens.refreshToken,
+      fcmToken: 'fcm-token',
+    });
     expect(store.useSessionStore.getState()).toMatchObject({ status: 'signedOut', session: null });
     expect(mockSecure.size).toBe(0);
   });
