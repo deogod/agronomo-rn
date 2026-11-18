@@ -15,7 +15,7 @@ Study port of the Meu Agrônomo Digital Flutter app to React Native. Built to le
 
 Expo SDK 58, TypeScript (`strict`), Expo Router, TanStack Query, Zustand, React Compiler, React Native Firebase, and an API client generated from OpenAPI with Orval.
 
-Architecture decisions: [CLAUDE.md](CLAUDE.md).
+Architecture decisions: [docs/architecture.md](docs/architecture.md).
 
 ## Running
 
@@ -70,6 +70,10 @@ npm run e2e:ios
 - Taking a photo and receiving a real push on iOS need a physical device, and were not tested on one.
 - The occurrence form leaves out field, season and coordinates.
 - `npm audit` reports `picomatch` (GHSA-fc5q-39xc-vjpf), used by build tools. No patched version has been published yet.
+
+## How this was built
+
+This is a learning project. I defined the architecture, rules and scope and reviewed each step, and the code was written with [Claude Code](https://claude.com/claude-code).
 
 ## License
 

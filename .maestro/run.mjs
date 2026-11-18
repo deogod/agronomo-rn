@@ -15,7 +15,7 @@ if (platform !== 'android' && platform !== 'ios') {
 
 const userFile = 'test-user.local.json';
 if (!existsSync(userFile)) {
-  console.error(`${userFile} not found (see CLAUDE.md, "API local").`);
+  console.error(`${userFile} not found. Create it with the email and password of a test user.`);
   process.exit(1);
 }
 const { email, password } = JSON.parse(readFileSync(userFile, 'utf8'));
