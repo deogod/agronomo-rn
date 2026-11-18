@@ -1,0 +1,35 @@
+appId: br.com.agronomo.rn
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- extendedWaitUntil:
+    visible: 'Faça login para começar'
+    timeout: 30000
+
+# Empty form
+- tapOn: 'Entrar'
+- assertVisible: 'Informe o e-mail'
+- assertVisible: 'Informe a senha'
+
+# Wrong password
+- tapOn: 'voce@exemplo.com'
+- inputText:
+    text: ${MAESTRO_TEST_EMAIL}
+    label: 'Type the test user e-mail'
+- runFlow:
+    file: subflows/type-password.yaml
+    env:
+      PASSWORD: 'wrong-password-1'
+- tapOn: 'Faça login para começar'
+- tapOn: 'Entrar'
+- extendedWaitUntil:
+    visible: 'Usuário inexistente ou senha inválida'
+    timeout: 15000
+
+# Valid sign-in and sign-out
+- runFlow: subflows/sign-in.yaml
+- tapOn: 'Sair'
+- extendedWaitUntil:
+    visible: 'Faça login para começar'
+    timeout: 15000

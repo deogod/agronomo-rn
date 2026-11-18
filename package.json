@@ -59,7 +59,9 @@
     "api:pull": "node api/pull-spec.mjs",
     "api:gen": "orval --config orval.config.ts",
     "postinstall": "npm run api:gen",
-    "test": "jest"
+    "test": "jest",
+    "e2e:android": "node .maestro/run.mjs android",
+    "e2e:ios": "node .maestro/run.mjs ios"
   },
   "private": true,
   "jest": {

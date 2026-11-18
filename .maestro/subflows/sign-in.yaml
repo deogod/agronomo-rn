@@ -1,0 +1,40 @@
+# Starts from a clean app and signs in as the test user (see run.mjs).
+appId: br.com.agronomo.rn
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- extendedWaitUntil:
+    visible: 'Faça login para começar'
+    timeout: 30000
+- tapOn: 'voce@exemplo.com'
+- inputText:
+    text: ${MAESTRO_TEST_EMAIL}
+    label: 'Type the test user e-mail'
+- runFlow:
+    file: type-password.yaml
+    env:
+      PASSWORD: ${MAESTRO_TEST_PASSWORD}
+# Tapping a label closes the keyboard on both platforms.
+- tapOn: 'Faça login para começar'
+- tapOn: 'Entrar'
+- extendedWaitUntil:
+    visible: '(Meus lugares|(?i)(save password|salvar senha).*)'
+    timeout: 20000
+# The system offers to save the password; the test never accepts it.
+# On Android the sheet's buttons can stay below the fold, so go back instead.
+- runFlow:
+    when:
+      platform: Android
+      visible: '(?i)save password.*'
+    commands:
+      - back
+- runFlow:
+    when:
+      platform: iOS
+      visible: '(?i)(save password|salvar senha).*'
+    commands:
+      - tapOn: '(?i)(not now|agora não)'
+- extendedWaitUntil:
+    visible: 'Meus lugares'
+    timeout: 15000

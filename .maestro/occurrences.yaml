@@ -1,0 +1,55 @@
+appId: br.com.agronomo.rn
+env:
+  # Rows are announced as "Abrir <title>" on iOS, so selectors allow a prefix.
+  OCCURRENCE_ROW: '.*E2E Ocorrencia'
+onFlowComplete:
+  - runScript: scripts/cleanup.js
+---
+- runFlow: subflows/sign-in.yaml
+- tapOn: '.*Fazenda Santa Clara'
+- tapOn: 'Ocorrências'
+- tapOn: 'Nova'
+
+# Required title
+- scrollUntilVisible:
+    element: 'Cadastrar'
+- tapOn: 'Cadastrar'
+- scrollUntilVisible:
+    element: 'Informe o título'
+    direction: UP
+- tapOn: 'Ex.: Lagarta na soja'
+- inputText: 'E2E Ocorrencia'
+- tapOn: 'Título'
+
+# Impossible date
+- scrollUntilVisible:
+    element: 'Cadastrar'
+- tapOn: '\d{2}/\d{2}/\d{4}'
+- eraseText: 10
+- inputText: '31022026'
+- tapOn: 'Data'
+- scrollUntilVisible:
+    element: 'Cadastrar'
+- tapOn: 'Cadastrar'
+- scrollUntilVisible:
+    element: 'Data inválida'
+
+# Valid date
+- tapOn: '31/02/2026'
+- eraseText: 10
+- inputText: '15012026'
+- tapOn: 'Data'
+- scrollUntilVisible:
+    element: 'Cadastrar'
+- tapOn: 'Cadastrar'
+- extendedWaitUntil:
+    visible: ${OCCURRENCE_ROW}
+    timeout: 15000
+
+# Detail
+- tapOn: ${OCCURRENCE_ROW}
+- extendedWaitUntil:
+    visible: 'Nenhuma foto ainda.*'
+    timeout: 15000
+- assertVisible: '15/01/2026'
+- assertVisible: 'Adicionar foto'

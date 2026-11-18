@@ -1,0 +1,52 @@
+appId: br.com.agronomo.rn
+env:
+  # Rows are announced as "Editar <name>" on iOS, so selectors allow a prefix.
+  FIELD_ROW: '.*E2E Talhao'
+onFlowComplete:
+  - runScript: scripts/cleanup.js
+---
+- runFlow: subflows/sign-in.yaml
+- tapOn: '.*Fazenda Santa Clara'
+- tapOn: 'Talhões'
+- tapOn: 'Novo'
+
+# Validation
+- tapOn: 'Cadastrar'
+- assertVisible: 'Informe o nome'
+- assertVisible: 'Informe a área'
+
+# Create
+- tapOn: 'Ex.: Talhão da baixada'
+- inputText: 'E2E Talhao'
+- tapOn: 'Ex.: 12,5'
+- inputText: '12,5'
+- tapOn: 'Tipo de solo'
+- tapOn: 'Argiloso'
+- tapOn: 'Cadastrar'
+- extendedWaitUntil:
+    visible: ${FIELD_ROW}
+    timeout: 15000
+
+# Edit
+- tapOn: ${FIELD_ROW}
+- tapOn: '12,5'
+- eraseText: 10
+- inputText: '20'
+- tapOn: 'Tipo de solo'
+- tapOn: 'Salvar alterações'
+- extendedWaitUntil:
+    visible: ${FIELD_ROW}
+    timeout: 15000
+
+# The new area was saved
+- tapOn: ${FIELD_ROW}
+- extendedWaitUntil:
+    visible: '20'
+    timeout: 15000
+
+# Delete (the alert button is upper case on Android)
+- tapOn: 'Excluir talhão'
+- tapOn: '(?i)excluir'
+- extendedWaitUntil:
+    notVisible: ${FIELD_ROW}
+    timeout: 15000

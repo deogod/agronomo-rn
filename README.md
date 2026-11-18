@@ -56,6 +56,15 @@ npm run format     # prettier
 npx expo-doctor    # needs the files in secrets/
 ```
 
+## End-to-end tests
+
+[Maestro](https://docs.maestro.dev) flows in `.maestro/` cover sign-in, fields and occurrences on both platforms. They need Maestro, Java 17, the app installed on a booted device, the backend running locally with `RATELIMIT_ENABLED=false`, and a test user in `test-user.local.json`:
+
+```bash
+npm run e2e:android
+npm run e2e:ios
+```
+
 ## Known limits
 
 - Taking a photo and receiving a real push on iOS need a physical device, and were not tested on one.
