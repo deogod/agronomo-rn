@@ -30,8 +30,10 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# local env files (only the example is committed)
+.env
+.env.*
+!.env.example
 
 # typescript
 *.tsbuildinfo
@@ -51,3 +53,12 @@ test-user.local.json
 # Local secrets and per-developer config (see secrets/README.md)
 secrets/*
 !secrets/README.md
+
+# The same files if they land outside secrets/ by mistake
+google-services.json
+GoogleService-Info.plist
+firebase-admin*.json
+*firebase-adminsdk*.json
+
+# Per-developer Claude Code settings
+.claude/settings.local.json

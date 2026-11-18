@@ -55,7 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     scheme: 'agronomorn',
     userInterfaceStyle: 'automatic',
     ios: {
-      icon: './assets/expo.icon',
+      icon: './assets/agronomo.icon',
       bundleIdentifier: 'br.com.agronomo.rn',
       googleServicesFile: secretFile('GOOGLE_SERVICES_PLIST', './secrets/GoogleService-Info.plist'),
       // Push: APNs entitlement (FCM delivers to iOS through APNs) and the
@@ -83,7 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         {
           backgroundColor: '#2E5E4E',
           image: './assets/images/splash-icon.png',
-          imageWidth: 76,
+          imageWidth: 200,
         },
       ],
       'expo-secure-store',

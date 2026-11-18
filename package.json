@@ -10,10 +10,10 @@
     "@react-native-firebase/messaging": "^27.1.1",
     "@react-native-google-signin/google-signin": "^17.0.0",
     "@tanstack/react-query": "^5.107.1",
-    "expo": "~58.0.24",
+    "expo": "~58.0.26",
     "expo-build-properties": "~58.0.12",
     "expo-constants": "~58.0.15",
-    "expo-dev-client": "~58.0.19",
+    "expo-dev-client": "~58.0.21",
     "expo-file-system": "~58.0.14",
     "expo-font": "~58.0.11",
     "expo-image": "~58.0.18",
@@ -21,7 +21,7 @@
     "expo-image-picker": "~58.0.10",
     "expo-linking": "~58.0.17",
     "expo-network": "~58.0.5",
-    "expo-router": "~58.0.31",
+    "expo-router": "~58.0.32",
     "expo-secure-store": "~58.0.3",
     "expo-splash-screen": "~58.0.14",
     "expo-status-bar": "~58.0.5",
@@ -43,7 +43,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "jest": "~30.5.2",
-    "jest-expo": "~58.0.14",
+    "jest-expo": "~58.0.15",
     "orval": "^8.47.0",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3"
@@ -64,5 +64,10 @@
   "private": true,
   "jest": {
     "preset": "jest-expo"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7",
+    "minimatch@>=7.0.0 <11.0.1": "^11.0.9",
+    "glob@>=9.0.0 <14.0.2": "^14.0.6"
   }
 }

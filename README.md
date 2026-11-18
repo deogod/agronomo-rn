@@ -1,20 +1,58 @@
 # Agrônomo RN
 
-Study port of the Meu Agrônomo Digital Flutter app to React Native (Expo SDK 58), consuming the same API (`agronomo-api`).
+[![CI](https://github.com/deogod/agronomo-rn/actions/workflows/ci.yml/badge.svg)](https://github.com/deogod/agronomo-rn/actions/workflows/ci.yml)
 
-## Run
+Study port of the Meu Agrônomo Digital Flutter app to React Native. Built to learn React Native coming from Flutter, for iOS and Android.
+
+## Features
+
+- E-mail/password and Google sign-in, with protected routes
+- Farms, and paginated fields with create, edit and delete
+- Push notifications (FCM) and a notifications screen
+- Occurrences with photos from the camera or gallery
+
+## Stack
+
+Expo SDK 58, TypeScript (`strict`), Expo Router, TanStack Query, Zustand, React Compiler, React Native Firebase, and an API client generated from OpenAPI with Orval.
+
+Architecture decisions: [CLAUDE.md](CLAUDE.md).
+
+## Running
+
+The app needs a development build (Expo Go is not enough) and three things that are not in this repository:
+
+1. **The backend API.** It is a separate project. The app calls `10.0.2.2:8081` on the Android emulator and `localhost:8081` on the iOS simulator. Set `EXPO_PUBLIC_API_URL` in `.env.local` to use another address (see `.env.example`).
+2. **A Firebase project** with an Android app and an Apple app, both using the id `br.com.agronomo.rn`, and Google sign-in enabled.
+3. **The Firebase config files** in `secrets/` (see [secrets/README.md](secrets/README.md)). Without them, Expo stops with a message saying which file is missing.
+
+Requirements: Node 26, JDK 17 for Android, and Xcode for iOS.
 
 ```bash
 npm install
-npm start          # then press i (iOS simulator) or a (Android emulator)
+npx expo run:android
+npx expo run:ios
+```
+
+Rebuild after adding a native library or changing `app.config.ts`. To start only the bundler:
+
+```bash
+npx expo start --dev-client
 ```
 
 ## Quality
 
 ```bash
-npm run check      # typecheck + lint
+npm run check      # typecheck + lint + tests (also runs in CI, no secrets needed)
 npm run format     # prettier
-npx expo-doctor
+npx expo-doctor    # needs the files in secrets/
 ```
 
-Architecture decisions and working rules: [CLAUDE.md](CLAUDE.md).
+## Known limits
+
+- Taking a photo and receiving a real push on iOS need a physical device, and were not tested on one.
+- The occurrence form leaves out field, season and coordinates.
+- `npm audit` reports `picomatch` (GHSA-fc5q-39xc-vjpf), used by build tools. No patched version has been published yet.
+
+## License
+
+The code is under the [MIT License](LICENSE). The Meu Agrônomo Digital name and brand are not covered by it.

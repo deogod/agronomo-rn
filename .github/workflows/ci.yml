@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+      # Also generates src/api/generated from api/openapi.json (postinstall).
+      - run: npm ci
+      # Typecheck, lint and tests. None of them need the files in secrets/.
+      - run: npm run check
