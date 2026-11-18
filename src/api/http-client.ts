@@ -51,6 +51,8 @@ export function configureAuth(adapter: AuthAdapter): void {
 }
 
 const TIMEOUT_MS = 30_000;
+/** Photos can take longer on a weak rural connection (same limit as the Flutter app). */
+const UPLOAD_TIMEOUT_MS = 60_000;
 /** Refresh when the access token (15 min) has less than this left. */
 const REFRESH_MARGIN_MS = 60_000;
 const REFRESH_PATH = '/auth/refresh';
@@ -81,7 +83,9 @@ export async function httpClient<T>(url: string, init: RequestInit = {}): Promis
 }
 
 async function send(url: string, init: RequestInit): Promise<Response> {
-  const timeout = AbortSignal.timeout(TIMEOUT_MS);
+  const timeout = AbortSignal.timeout(
+    init.body instanceof FormData ? UPLOAD_TIMEOUT_MS : TIMEOUT_MS,
+  );
   // TanStack Query passes its own signal to cancel stale requests.
   const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
 
@@ -91,6 +95,8 @@ async function send(url: string, init: RequestInit): Promise<Response> {
     // Cancelled by the caller: not a failure, TanStack ignores it.
     if (init.signal?.aborted) throw error;
     if (timeout.aborted) throw new ApiError(errorMessages.timeout, { kind: 'timeout' });
+    // The user sees "no connection"; a bug in the request must still be findable.
+    if (__DEV__) console.warn(`[http] ${init.method ?? 'GET'} ${url} failed:`, error);
     throw new ApiError(errorMessages.network, { kind: 'network' });
   }
 }

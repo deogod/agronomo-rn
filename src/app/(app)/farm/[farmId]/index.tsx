@@ -53,6 +53,16 @@ export default function FarmScreen() {
                 // Same rule as the API: a home has no fields or hectares.
                 <AppText tone="muted">Casas não têm talhões.</AppText>
               )}
+              <Button
+                title="Ocorrências"
+                variant="outlined"
+                onPress={() =>
+                  router.push({
+                    pathname: '/farm/[farmId]/occurrences',
+                    params: { farmId: member.farm.id },
+                  })
+                }
+              />
             </ScrollView>
           ) : (
             <ScrollView

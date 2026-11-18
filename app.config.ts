@@ -92,6 +92,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       '@react-native-firebase/crashlytics',
       '@react-native-firebase/auth',
       '@react-native-firebase/messaging',
+      [
+        'expo-image-picker',
+        {
+          cameraPermission: 'O Agrônomo RN usa a câmera para fotografar as ocorrências da fazenda.',
+          photosPermission: 'O Agrônomo RN usa suas fotos para anexar às ocorrências da fazenda.',
+          // Photos only: keeps the microphone permission out of the Android app.
+          microphonePermission: false,
+        },
+      ],
       // Same dependency manager as Firebase (SPM); keeps the Firebase-based setup.
       ['@react-native-google-signin/google-signin', { iosDependencyManager: 'spm' }],
       [

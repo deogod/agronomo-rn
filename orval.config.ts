@@ -27,6 +27,7 @@ export default defineConfig({
           // Paginated lists used by the app get an infinite-query hook too.
           fieldFindAllByFarmId: { query: { useInfinite: true, useInfiniteQueryParam: 'page' } },
           notificationFindAll: { query: { useInfinite: true, useInfiniteQueryParam: 'page' } },
+          occurrenceFindAllByFarmId: { query: { useInfinite: true, useInfiniteQueryParam: 'page' } },
         },
       },
     },

@@ -35,6 +35,7 @@ export const useSessionStore = create<SessionState>()(() => ({
 
 export const useSessionStatus = () => useSessionStore((state) => state.status);
 export const useSessionUser = () => useSessionStore((state) => state.session?.user ?? null);
+export const useAccessToken = () => useSessionStore((state) => state.session?.accessToken);
 
 // --- persistence ------------------------------------------------------------
 
