@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { InAppNotice } from '@/features/notifications/in-app-notice';
 import { useNotificationEvents } from '@/features/notifications/use-notification-events';
 import { usePushRegistration } from '@/features/notifications/use-push-registration';
+import { OfflineBanner } from '@/features/occurrences/offline-banner';
 
 // Screens available only with a session (guarded in the root layout).
 // Each screen sets its own title with <Stack.Screen options /> inside it.
@@ -21,7 +22,8 @@ export default function AppLayout() {
             : {}
         }
       />
-      {/* Drawn after the Stack, so it stays on top of every screen. */}
+      {/* Drawn after the Stack, so they stay on top of every screen. */}
+      <OfflineBanner />
       <InAppNotice />
     </>
   );

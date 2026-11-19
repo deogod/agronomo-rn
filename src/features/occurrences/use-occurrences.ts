@@ -8,12 +8,9 @@ import {
   useMediaFindById,
 } from '@/api/generated/endpoints/media/media';
 import {
-  getOccurrenceFindAllByFarmIdInfiniteQueryKey,
-  occurrenceSave,
   useOccurrenceFindAllByFarmIdInfinite,
   useOccurrenceFindById,
 } from '@/api/generated/endpoints/occurrence/occurrence';
-import type { OccurrenceSaveDto } from '@/api/generated/model';
 import { nextPageParam, PAGE_SIZE } from '@/api/pagination';
 
 import { pickPhoto, preparePhoto, type PhotoSource } from './occurrence-photo';
@@ -46,18 +43,6 @@ export function useOccurrencePhotos(occurrenceId: number) {
 
 export function useOccurrenceMedia(mediaId: number) {
   return useMediaFindById(mediaId, { query: { select: (response) => response.data } });
-}
-
-export function useCreateOccurrence(farmId: number) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: OccurrenceSaveDto) => occurrenceSave(payload),
-    // Returning the promise keeps isPending true until the list is fresh.
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: getOccurrenceFindAllByFarmIdInfiniteQueryKey(farmId),
-      }),
-  });
 }
 
 /**

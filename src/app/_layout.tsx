@@ -1,17 +1,20 @@
-import { QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { configureAuth } from '@/api/http-client';
+import { clearOfflineCache, offlinePersistOptions } from '@/api/offline-cache';
 import { connectQueryClientToDevice, queryClient } from '@/api/query-client';
 import {
   hydrateSession,
   sessionAuthAdapter,
   useSessionStatus,
   useSessionStore,
+  useSessionUser,
 } from '@/features/auth/session-store';
+import { registerOccurrenceQueue } from '@/features/occurrences/occurrence-queue';
 import { useTheme, type Theme } from '@/ui';
 
 // --- app start (module scope: runs once, before the first render) -----------
@@ -21,6 +24,7 @@ void SplashScreen.preventAutoHideAsync();
 // The http-client reads and renews the session through the session store.
 configureAuth(sessionAuthAdapter);
 connectQueryClientToDevice();
+registerOccurrenceQueue(queryClient);
 // Start reading the stored session right away (Flutter: RouterBloc on '/').
 void hydrateSession();
 // Signing out (by the user or by a rejected refresh) drops every cached
@@ -28,6 +32,7 @@ void hydrateSession();
 useSessionStore.subscribe((state, previous) => {
   if (previous.status === 'signedIn' && state.status === 'signedOut') {
     queryClient.clear();
+    void clearOfflineCache();
   }
 });
 
@@ -52,14 +57,26 @@ function navigationTheme(theme: Theme) {
 
 export default function RootLayout() {
   const theme = useTheme();
+  const status = useSessionStatus();
+  const userId = useSessionUser()?.userId;
+
+  // The saved cache belongs to a user, so wait to know who it is (splash is up).
+  if (status === 'loading') return null;
+
   return (
-    <QueryClientProvider client={queryClient}>
+    // The key restores the cache again when the user changes.
+    <PersistQueryClientProvider
+      key={userId ?? 'signed-out'}
+      client={queryClient}
+      persistOptions={offlinePersistOptions(userId)}
+      onSuccess={() => queryClient.resumePausedMutations()}
+    >
       <ThemeProvider value={navigationTheme(theme)}>
         <SplashScreenController />
         <RootNavigator />
         <StatusBar style="auto" />
       </ThemeProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
 

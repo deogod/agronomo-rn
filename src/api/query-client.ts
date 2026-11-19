@@ -8,6 +8,7 @@ import * as Network from 'expo-network';
 import { AppState } from 'react-native';
 
 import { ApiError } from './errors';
+import { OFFLINE_MAX_AGE_MS } from './offline-rules';
 
 const MAX_RETRIES = 2;
 
@@ -29,11 +30,16 @@ export const queryClient = new QueryClient({
     queries: {
       // Data younger than this is served from cache without refetching.
       staleTime: 30_000,
+      // Kept in memory as long as it stays on disk, or it would not be saved again.
+      gcTime: OFFLINE_MAX_AGE_MS,
       retry: shouldRetry,
     },
     mutations: {
       // A save must not run twice on its own.
       retry: false,
+      // Fail right away when offline instead of waiting forever with a spinner.
+      // Only the occurrence queue opts into waiting (see occurrence-queue.ts).
+      networkMode: 'always',
     },
   },
 });

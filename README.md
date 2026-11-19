@@ -10,6 +10,7 @@ Study port of the Meu Agrônomo Digital Flutter app to React Native. Built to le
 - Farms, and paginated fields with create, edit and delete
 - Push notifications (FCM) and a notifications screen
 - Occurrences with photos from the camera or gallery, and a full-screen viewer with pinch to zoom
+- Offline mode: saved farms, fields and occurrences stay readable, and new occurrences are sent when the connection returns
 
 ## Stack
 
@@ -69,6 +70,7 @@ npm run e2e:ios
 
 - Taking a photo and receiving a real push on iOS need a physical device, and were not tested on one.
 - The occurrence form leaves out field, season and coordinates.
+- Photos cannot be viewed or uploaded offline.
 - `npm audit` reports `picomatch` (GHSA-fc5q-39xc-vjpf), used by build tools. No patched version has been published yet.
 
 ## How this was built

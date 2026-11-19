@@ -2,6 +2,8 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { OccurrenceItem } from '@/features/occurrences/occurrence-item';
+import { usePendingOccurrences } from '@/features/occurrences/occurrence-queue';
+import { PendingOccurrenceItem } from '@/features/occurrences/pending-occurrence-item';
 import { useFarmOccurrences } from '@/features/occurrences/use-occurrences';
 import { AppText, Button, QueryState, Screen, usePullToRefresh, useTheme, type Theme } from '@/ui';
 
@@ -11,6 +13,7 @@ export default function OccurrencesScreen() {
   const styles = createStyles(theme);
   const { farmId } = useLocalSearchParams<{ farmId: string }>();
   const occurrences = useFarmOccurrences(Number(farmId));
+  const pending = usePendingOccurrences(Number(farmId));
   const pull = usePullToRefresh(occurrences.refetch);
 
   function loadMore() {
@@ -47,16 +50,25 @@ export default function OccurrencesScreen() {
             contentContainerStyle={styles.list}
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
+            ListHeaderComponent={
+              <>
+                {pending.map(({ id, payload }) => (
+                  <PendingOccurrenceItem key={id} occurrence={payload} />
+                ))}
+              </>
+            }
             ListFooterComponent={
               occurrences.isFetchingNextPage ? (
                 <ActivityIndicator style={styles.footer} color={theme.colors.primary} />
               ) : undefined
             }
             ListEmptyComponent={
-              <View style={styles.empty}>
-                <AppText variant="subtitle">Nenhuma ocorrência ainda</AppText>
-                <AppText tone="muted">Toque em “Nova” para registrar a primeira.</AppText>
-              </View>
+              pending.length > 0 ? undefined : (
+                <View style={styles.empty}>
+                  <AppText variant="subtitle">Nenhuma ocorrência ainda</AppText>
+                  <AppText tone="muted">Toque em “Nova” para registrar a primeira.</AppText>
+                </View>
+              )
             }
             refreshControl={
               <RefreshControl

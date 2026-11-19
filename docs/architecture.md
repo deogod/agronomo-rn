@@ -73,6 +73,12 @@ Photos require the `Authorization` header. `expo-image` receives the header, a `
 
 The `photo/[mediaId]` route is presented as a `fullScreenModal` through the `screenOptions` of the `(app)` layout, because the presentation must be known before the screen is pushed. Pinch, pan and double tap use React Native Gesture Handler 3 and Reanimated. Position lives in shared values and the geometry runs as worklets on the UI thread (`features/occurrences/photo-zoom.ts`), so gestures do not re-render React on each frame.
 
+### Offline mode
+
+The query cache is saved in AsyncStorage for 7 days with `PersistQueryClientProvider`. AsyncStorage is not encrypted, so `src/api/offline-rules.ts` is an allowlist: farms, fields and occurrences are saved, and everything else stays in memory. The cache is tied to the user and the app version, and signing out erases it.
+
+Mutations fail right away without a connection, except for creating an occurrence. Those wait in a queue, survive an app restart and are sent in order when the connection returns. Photos need a connection and are not available offline, because private photos are never written to disk.
+
 ### Secrets
 
 Firebase config files stay in the git-ignored `secrets/` folder locally and in secret EAS file variables for cloud builds. `EXPO_PUBLIC_*` values are bundled into the app, so they are never secret.

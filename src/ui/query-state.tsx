@@ -10,6 +10,7 @@ type QueryLike<T> = {
   data: T | undefined;
   isError: boolean;
   error: Error | null;
+  fetchStatus?: 'fetching' | 'paused' | 'idle';
   refetch: () => Promise<unknown>;
 };
 
@@ -39,6 +40,18 @@ export function QueryState<T>({ query, children }: QueryStateProps<T>) {
           {query.error?.message}
         </AppText>
         <Button title="Tentar de novo" variant="outlined" onPress={() => void query.refetch()} />
+      </View>
+    );
+  }
+
+  // Nothing saved for this screen yet, and no connection to load it.
+  if (query.fetchStatus === 'paused') {
+    return (
+      <View style={[styles.center, { gap: theme.spacing.sm }]}>
+        <AppText variant="subtitle">Sem conexão</AppText>
+        <AppText tone="muted" style={styles.text}>
+          Conecte-se à internet para carregar esta tela pela primeira vez.
+        </AppText>
       </View>
     );
   }

@@ -1,11 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 import { router, Stack } from 'expo-router';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { signOut, useSessionUser } from '@/features/auth/session-store';
 import { FarmCard } from '@/features/farms/farm-card';
 import { useMyFarms } from '@/features/farms/use-my-farms';
 import { NotificationPermissionCard } from '@/features/notifications/notification-permission-card';
+import { usePendingOccurrenceCount } from '@/features/occurrences/occurrence-queue';
 import { AppText, Button, QueryState, Screen, usePullToRefresh, useTheme, type Theme } from '@/ui';
 
 /** Home: the user's places (Flutter: HomePage + HomeBloc). */
@@ -16,6 +17,19 @@ export default function Home() {
   const farms = useMyFarms();
   const pull = usePullToRefresh(farms.refetch);
   const logout = useMutation({ mutationFn: signOut });
+  const pendingOccurrences = usePendingOccurrenceCount();
+
+  function confirmLogout() {
+    if (pendingOccurrences === 0) {
+      logout.mutate();
+      return;
+    }
+    // Signing out erases what is saved on the device, including the queue.
+    Alert.alert('Sair e descartar envios?', 'As ocorrências que aguardam conexão serão perdidas.', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Sair', style: 'destructive', onPress: () => logout.mutate() },
+    ]);
+  }
 
   return (
     <Screen edges={['bottom']} style={styles.screen}>
@@ -30,7 +44,7 @@ export default function Home() {
                 title="Sair"
                 variant="text"
                 loading={logout.isPending}
-                onPress={() => logout.mutate()}
+                onPress={confirmLogout}
               />
             </View>
           ),
