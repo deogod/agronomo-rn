@@ -12,6 +12,23 @@ Study port of the Meu Agrônomo Digital Flutter app to React Native. Built to le
 - Occurrences with photos from the camera or gallery, and a full-screen viewer with pinch to zoom
 - Offline mode: saved farms, fields and occurrences stay readable, and new occurrences are sent when the connection returns
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/home.png" width="240" alt="Home screen listing the farms"><br><sub>Farms</sub></td>
+    <td align="center"><img src="docs/screenshots/fields.png" width="240" alt="Paginated list of fields"><br><sub>Fields</sub></td>
+    <td align="center"><img src="docs/screenshots/occurrences.png" width="240" alt="List of occurrences"><br><sub>Occurrences</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/occurrence.png" width="240" alt="Occurrence details with two photos"><br><sub>Occurrence details</sub></td>
+    <td align="center"><img src="docs/screenshots/photo-zoom.png" width="240" alt="Full-screen photo zoomed in"><br><sub>Photo zoom</sub></td>
+    <td align="center"><img src="docs/screenshots/offline.png" width="240" alt="Occurrence waiting to be sent while offline"><br><sub>Offline queue (Android)</sub></td>
+  </tr>
+</table>
+
+The screens show demo data, and the photos are illustrations made for this project.
+
 ## Stack
 
 Expo SDK 58, TypeScript (`strict`), Expo Router, TanStack Query, Zustand, React Compiler, React Native Firebase, and an API client generated from OpenAPI with Orval.
